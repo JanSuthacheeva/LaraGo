@@ -2,9 +2,10 @@ package main
 
 import (
   "fmt"
+  "log"
   "os"
   "os/exec"
-  "log"
+  "path/filepath"
 )
 
 func main() {
@@ -16,14 +17,25 @@ func main() {
 
   projectName := os.Args[1]
 
-  cmd := exec.Command("laravel", "new",projectName)
+
+  if err := installLaravel(projectName); err != nil {
+    log.Fatal(err)
+    os.Exit(1)
+  }
+
+  newPath := filepath.Join(".", projectName)
+
+  if err := os.Chdir(newPath); err != nil {
+    log.Fatal(err)
+    os.Exit(1)
+  }
+}
+
+func installLaravel(projectName string) error {
+  cmd := exec.Command("laravel", "new", projectName)
   cmd.Stdin = os.Stdin
   cmd.Stdout = os.Stdout
   cmd.Stderr = os.Stderr
 
-  if err := cmd.Run(); err != nil {
-    log.Fatal(err)
-    os.Exit(1)
-  }
-  fmt.Print(cmd.Output())
+  return cmd.Run()
 }
