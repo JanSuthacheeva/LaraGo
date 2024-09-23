@@ -1,11 +1,12 @@
 package main
 
 import (
-  "fmt"
-  "log"
-  "os"
-  "os/exec"
-  "path/filepath"
+	"errors"
+	"fmt"
+	"log"
+	"os"
+	"os/exec"
+	"path/filepath"
 )
 
 func main() {
@@ -39,8 +40,26 @@ func main() {
     log.Fatal(err)
     os.Exit(1)
   }
+
+  _, err := os.Stat(".git")
+  if err != nil {
+    if errors.Is(err, os.ErrNotExist) {
+      fmt.Println("No git repository initialized. Skip creating symbolic link for pre-commit hook.")
+    } else {
+      log.Fatal(err)
+      os.Exit(1)
+    }
+  } else {
+    if err := createSymbolicLink(); err != nil {
+      log.Fatal(err)
+      os.Exit(1)
+    }
+  }
 }
 
+/**
+ * Installs a new laravel project with the laravel new command.
+ */
 func installLaravel(projectName string) error {
   cmd := exec.Command("laravel", "new", projectName)
   cmd.Stdin = os.Stdin
@@ -90,3 +109,14 @@ func writePreCommitFile() error {
 
   return nil
 }
+
+func createSymbolicLink() error {
+  if err := os.Chmod("pre-commit.sample", 777); err != nil {
+    return err
+  }
+  if err := os.Symlink("../../pre-commit.sample", ".git/hooks/pre-commit"); err != nil {
+    return err
+  }
+  return nil
+}
+
