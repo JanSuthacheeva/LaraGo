@@ -29,6 +29,16 @@ func main() {
     log.Fatal(err)
     os.Exit(1)
   }
+
+  if err := installDependencies(); err != nil {
+    log.Fatal(err)
+    os.Exit(1)
+  }
+
+  if err := writePreCommitFile(); err != nil {
+    log.Fatal(err)
+    os.Exit(1)
+  }
 }
 
 func installLaravel(projectName string) error {
@@ -38,4 +48,45 @@ func installLaravel(projectName string) error {
   cmd.Stderr = os.Stderr
 
   return cmd.Run()
+}
+
+func installDependencies() error {
+  dependencies := []string{
+    "composer require --dev laravel/pint",
+    "composer require --dev phpstan/phpstan",
+  }
+
+  for _, dep := range dependencies {
+    cmd := exec.Command("sh", "-c", dep)
+    cmd.Stdin = os.Stdin
+    cmd.Stdout = os.Stdout
+    cmd.Stderr = os.Stderr
+
+    if err := cmd.Run(); err != nil {
+      return err
+    }
+  }
+
+  return nil
+}
+
+// Make this rely of an argument
+func writePreCommitFile() error {
+  file, err := os.Create("pre-commit.sample")
+  if err != nil {
+    return err
+  }
+
+  _, err = file.WriteString(GetPreCommitHook())
+  if err != nil {
+    file.Close()
+    return err
+  }
+
+  err = file.Close()
+  if err != nil {
+    return err
+  }
+
+  return nil
 }
