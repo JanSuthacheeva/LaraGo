@@ -55,6 +55,10 @@ func main() {
       os.Exit(1)
     }
   }
+  if err := writePhpStanFile(); err != nil {
+    log.Fatal(err)
+    os.Exit(1)
+  }
 }
 
 /**
@@ -69,10 +73,14 @@ func installLaravel(projectName string) error {
   return cmd.Run()
 }
 
+/**
+ *Installs all the dependencies into the new laravel project.
+ */
 func installDependencies() error {
   dependencies := []string{
     "composer require --dev laravel/pint",
     "composer require --dev phpstan/phpstan",
+    "composer require --dev larastan/larastan:^2.0",
   }
 
   for _, dep := range dependencies {
@@ -89,7 +97,10 @@ func installDependencies() error {
   return nil
 }
 
-// Make this rely of an argument
+/**
+ * Creates and writes the pre-commit.sample file in the
+ * new laravel project.
+ */
 func writePreCommitFile() error {
   file, err := os.Create("pre-commit.sample")
   if err != nil {
@@ -110,6 +121,10 @@ func writePreCommitFile() error {
   return nil
 }
 
+/**
+ * Creates a symbolic link between the pre-commit.sample file
+ * in the project directory and the pre-commit file in the .git/hooks directory.
+ */
 func createSymbolicLink() error {
   if err := os.Chmod("pre-commit.sample", 777); err != nil {
     return err
@@ -117,6 +132,26 @@ func createSymbolicLink() error {
   if err := os.Symlink("../../pre-commit.sample", ".git/hooks/pre-commit"); err != nil {
     return err
   }
+  return nil
+}
+
+func writePhpStanFile() error {
+  file, err := os.Create("phpstan.neon")
+  if err != nil {
+    return err
+  }
+
+  _, err = file.WriteString(GetPhpStanContent())
+  if err != nil {
+    file.Close()
+    return err
+  }
+
+  err = file.Close()
+  if err != nil {
+    return err
+  }
+
   return nil
 }
 

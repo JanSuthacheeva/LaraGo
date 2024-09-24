@@ -29,3 +29,28 @@ fi
 exit 0
 `
 }
+
+func GetPhpStanContent() string {
+  return `
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+
+    paths:
+      - app/
+
+    # Level 9 is the highest level
+    level: 9
+    excludePaths:
+	- ./app/Http/Controllers/Auth/*
+	- ./app/Http/Controllers/ProfileController.php
+	- ./app/Http/Requests/ProfileUpdateRequest.php
+	- ./*/*/AuthServiceProvider.php
+	- ./*/*/NewPasswordController.php
+	- ./*/*/RegisteredUserController.php
+	- ./*/*/LoginRequest.php
+
+    checkGenericClassInNonGenericObjectType: false
+`
+}
