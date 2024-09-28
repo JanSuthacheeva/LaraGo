@@ -36,6 +36,11 @@ add the directory to your `$PATH`.
 On Windows, please refer to the countless tutorials in the internet on how to add a file to your `path`.
 Simply google something like `How to add something to path on Windows` and countless tutorials pop up.
 
+Once added to your path, simply run
+```larago```
+inside the your projects directory or code directory. LaraGo prompts you to write down a folder name in
+which it will install the new laravel project.
+
 ## Options
 
 You can run LaraGo with the following flags:
