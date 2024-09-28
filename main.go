@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -10,6 +11,8 @@ import (
 )
 
 func main() {
+  sail := flag.Bool("sail", false, "If set, sail will be installed during the setup process.")
+  phpStanLvl := flag.Int("phpstan-lvl", 9, "Set the phpstan level. Defaults to 9.")
 
   if len(os.Args) < 2 {
     fmt.Println("Please provide a project name.")
@@ -55,7 +58,7 @@ func main() {
       os.Exit(1)
     }
   }
-  if err := writePhpStanFile(); err != nil {
+  if err := writePhpStanFile(phpStanLvl); err != nil {
     log.Fatal(err)
     os.Exit(1)
   }
@@ -107,7 +110,7 @@ func writePreCommitFile() error {
     return err
   }
 
-  _, err = file.WriteString(GetPreCommitHook())
+  _, err = file.WriteString(GetPreCommitFileContent())
   if err != nil {
     file.Close()
     return err
@@ -135,13 +138,13 @@ func createSymbolicLink() error {
   return nil
 }
 
-func writePhpStanFile() error {
+func writePhpStanFile(phpstanLvl *int) error {
   file, err := os.Create("phpstan.neon")
   if err != nil {
     return err
   }
 
-  _, err = file.WriteString(GetPhpStanContent())
+  _, err = file.WriteString(GetPhpStanFileContent(phpstanLvl))
   if err != nil {
     file.Close()
     return err
