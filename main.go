@@ -10,18 +10,21 @@ import (
 )
 
 func main() {
-  // sail := flag.Bool("sail", false, "If set, sail will be installed during the setup process.")
-  phpStanLvl := flag.Int("phpstan-lvl", 9, "Set the phpstan level. Defaults to 9.")
+  sail := flag.Bool("sail", false, "If set, sail will be installed during the setup process.")
+  phpStanLvl := flag.Int("phpstanlvl", 9, "Set the phpstan level.")
 
-  if len(os.Args) < 2 {
-    fmt.Println("Please provide a project name.")
+  flag.Parse()
+
+  var projectName string
+  fmt.Println("Welcome to LaraGo!")
+  fmt.Print("Please enter the project name (folder name) that will be created: ")
+  _, err := fmt.Scan(&projectName)
+  if err != nil {
+    log.Fatal(err)
     os.Exit(1)
   }
 
-  projectName := os.Args[1]
-
-
-  if err := installLaravel(projectName); err != nil {
+  if err = InstallLaravel(projectName); err != nil {
     log.Fatal(err)
     os.Exit(1)
   }
@@ -33,17 +36,17 @@ func main() {
     os.Exit(1)
   }
 
-  if err := installDependencies(); err != nil {
+  if err = InstallDependencies(*sail); err != nil {
     log.Fatal(err)
     os.Exit(1)
   }
 
-  if err := writePreCommitFile(); err != nil {
+  if err = WritePreCommitFile(); err != nil {
     log.Fatal(err)
     os.Exit(1)
   }
 
-  _, err := os.Stat(".git")
+  _, err = os.Stat(".git")
   if err != nil {
     if errors.Is(err, os.ErrNotExist) {
       fmt.Println("No git repository initialized. Skip creating symbolic link for pre-commit hook.")
@@ -52,12 +55,12 @@ func main() {
       os.Exit(1)
     }
   } else {
-    if err := createSymbolicLink(); err != nil {
+    if err = CreateSymbolicLink(); err != nil {
       log.Fatal(err)
       os.Exit(1)
     }
   }
-  if err := writePhpStanFile(phpStanLvl); err != nil {
+  if err = WritePhpStanFile(*phpStanLvl); err != nil {
     log.Fatal(err)
     os.Exit(1)
   }

@@ -8,7 +8,7 @@ import (
 /**
  * Installs a new laravel project with the laravel new command.
  */
-func installLaravel(projectName string) error {
+func InstallLaravel(projectName string) error {
   cmd := exec.Command("laravel", "new", projectName)
   cmd.Stdin = os.Stdin
   cmd.Stdout = os.Stdout
@@ -20,11 +20,15 @@ func installLaravel(projectName string) error {
 /**
  *Installs all the dependencies into the new laravel project.
  */
-func installDependencies() error {
+func InstallDependencies(sail bool) error {
   dependencies := []string{
     "composer require --dev laravel/pint",
     "composer require --dev phpstan/phpstan",
     "composer require --dev larastan/larastan:^2.0",
+  }
+  if sail {
+    dependencies = append(dependencies, "composer require laravel/sail --dev")
+    dependencies = append(dependencies, "php artisan sail:install")
   }
 
   for _, dep := range dependencies {
@@ -45,7 +49,7 @@ func installDependencies() error {
  * Creates and writes the pre-commit.sample file in the
  * new laravel project.
  */
-func writePreCommitFile() error {
+func WritePreCommitFile() error {
   file, err := os.Create("pre-commit.sample")
   if err != nil {
     return err
@@ -69,7 +73,7 @@ func writePreCommitFile() error {
  * Creates a symbolic link between the pre-commit.sample file
  * in the project directory and the pre-commit file in the .git/hooks directory.
  */
-func createSymbolicLink() error {
+func CreateSymbolicLink() error {
   if err := os.Chmod("pre-commit.sample", 777); err != nil {
     return err
   }
@@ -79,7 +83,7 @@ func createSymbolicLink() error {
   return nil
 }
 
-func writePhpStanFile(phpstanLvl *int) error {
+func WritePhpStanFile(phpstanLvl int) error {
   file, err := os.Create("phpstan.neon")
   if err != nil {
     return err

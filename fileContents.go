@@ -34,7 +34,7 @@ exit 0
 `
 }
 
-func GetPhpStanFileContent(phpstanLvl *int) string {
+func GetPhpStanFileContent(phpstanLvl int) string {
   return fmt.Sprintf(`
 includes:
     - vendor/larastan/larastan/extension.neon
