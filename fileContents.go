@@ -1,6 +1,10 @@
 package main
 
-func GetPreCommitHook() string {
+import (
+  "fmt"
+)
+
+func GetPreCommitFileContent() string {
  return `#!/bin/bash
 # Get the list of staged files.
 staged_files=$(git diff --cached --name-only)
@@ -30,8 +34,8 @@ exit 0
 `
 }
 
-func GetPhpStanContent() string {
-  return `
+func GetPhpStanFileContent(phpstanLvl *int) string {
+  return fmt.Sprintf(`
 includes:
     - vendor/larastan/larastan/extension.neon
 
@@ -41,7 +45,7 @@ parameters:
       - app/
 
     # Level 9 is the highest level
-    level: 9
+    level: %d
     excludePaths:
 	- ./app/Http/Controllers/Auth/*
 	- ./app/Http/Controllers/ProfileController.php
@@ -52,5 +56,5 @@ parameters:
 	- ./*/*/LoginRequest.php
 
     checkGenericClassInNonGenericObjectType: false
-`
+`, phpstanLvl)
 }
