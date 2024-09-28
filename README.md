@@ -16,6 +16,13 @@ laravel pint formats the `.php` files in your directoy and phpstan checks the ch
 You can adjust the `phpstan.neon` and `pre-commit.sample` files by yourself and adjust them to your
 needs after the project is set up.
 
+## Prerequisities
+
+In order to run LaraGo you need to have PHP installed.
+On top of that, you need to have the laravel package installed globally.
+In order to install the laravel package globally, simply type `composer global require laravel/installer`
+in your terminal.
+
 ## Quick Start
 
 If you just want to use the script to create your laravel projects, download the executable in the
@@ -31,6 +38,48 @@ Simply google something like `How to add something to path on Windows` and count
 
 ## Options
 
+You can run LaraGo with the following flags:
+
+### -h
+
+This flag lists all other flags that you can use while running LaraGo.
+
+### -sail
+
+When running LaraGo with the `sail` flag, it will also run the following two commands automatically for you:
+`composer require laravel/sail --dev` and `php artisan sail:install`.
+
+By default the sail `sail` option is set to `false`.
+
+### Example
+
+```
+larago -sail
+```
+
+#### Aliases
+
+- `--sail`
+- `-sail=true`
+- `--sail=true`
+
+### -phpstanlvl
+
+By default, the phpstan level is set to 9 (the highest level for the strictest code quality chek). However,
+if you want to specify a lower level, you can set it with this flag. Every provided value that is under
+1 or above 9 will cause the program to immediately fail.
+
+#### Example
+
+```
+larago -phpstan 8
+```
+
+#### Aliases
+
+- `-phpstan=8`
+- `--phpstan 8`
+- `--phpstan=8`
 
 ## Adjust the script
 
@@ -41,6 +90,6 @@ you should be able to pick it up pretty quickly.
 
 ## Upcoming Features
 
-- Adjust phpstan level through option parameter
-- Add option to install Laravel sail
+Please create an issue or contact me on my socials if you are using this tool and want some additional features!
+I am happy to implement them for you!
 
